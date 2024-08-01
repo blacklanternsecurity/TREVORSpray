@@ -79,13 +79,17 @@ class AnyConnect(BaseSprayModule):
                 log.error(f"Error parsing content: {e}, {initial_response.content}")
                 return False
             for tunnelgroup in parsed_initial_response.iterfind(".//opaque"):
-                group = tunnelgroup.find("tunnel-group").text
-                groupname = tunnelgroup.find("group-alias").text
-                if group and groupname:
-                    tunnelgroups[groupname] = {
-                        "group": group,
+                group = tunnelgroup.find("tunnel-group")
+                group_alias = tunnelgroup.find("group-alias")
+
+                if group is not None:
+                    group_text = group.text
+                    group_alias_text = group_alias.text if group_alias is not None else group_text
+
+                    tunnelgroups[group_alias_text] = {
+                        "group": group_text,
                         "groupxml": etree.tostring(tunnelgroup).decode(),
-                        "groupname": groupname,
+                        "groupname": group_alias_text,
                     }
 
         # plain auth
