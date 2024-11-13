@@ -63,6 +63,11 @@ def main():
         metavar="DOMAIN",
         help="Retrieves MX records and info related to authentication, email, Azure, Microsoft 365, etc. If --usernames are specified, this also enables username enumeration.",
     )
+    basic_group.add_argument(
+        "--export-tenants",
+        metavar="FILE",
+        help="Export all discovered tenant domains to a file",
+    )
 
     advanced_group = parser.add_argument_group(
         title="advanced arguments",

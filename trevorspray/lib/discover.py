@@ -4,6 +4,7 @@ import dns.resolver
 from .util import *
 from contextlib import suppress
 from urllib.parse import urlparse, urlunparse
+from pathlib import Path
 
 log = logging.getLogger("trevorspray.discovery")
 
@@ -55,6 +56,16 @@ class DomainDiscovery:
             loot_file = loot_dir / f"recon_{self.domain}_other_tenant_domains.txt"
             update_file(loot_file, msoldomains)
             log.info(f"Wrote {len(msoldomains):,} domains to {loot_file}")
+            
+            if self.trevor.options.export_tenants:
+                filtered_domains = [d for d in msoldomains if 'onmicrosoft.com' not in d.lower()]
+                export_file = Path(self.trevor.options.export_tenants)
+                export_file.parent.mkdir(parents=True, exist_ok=True)
+                with open(export_file, 'w') as f:
+                    for domain in filtered_domains:
+                        f.write(f"{domain}\n")
+                log.success(f"Exported {len(filtered_domains)} domains to {export_file}")
+        
         self.onedrive_tenantnames()
 
     @staticmethod
